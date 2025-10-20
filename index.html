@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>节日专属祝福</title>
+  <style>
+    :root{
+      /* 在这里替换为你的背景图 URL（或留空使用渐变色作为备用） */
+      --bg1-url: url('bg1.png');
+      --bg2-url: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1600&auto=format&fit=crop');
+
+      --bg1-fallback: linear-gradient(135deg,#0f172a 0%, #0b1220 50%, #0b2540 100%);
+      --bg2-fallback: linear-gradient(135deg,#061012 0%, #073b2f 50%, #0b5a7a 100%);
+
+      --accent: #00d1b2;
+      --glass: rgba(255,255,255,0.06);
+      --text-main: #e6f0ff;
+      --muted: rgba(230,240,255,0.85);
+      font-family: system-ui, -apple-system, "Helvetica Neue", "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", "Microsoft Yahei", sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      color:var(--text-main);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow:hidden;
+      background: #071025;
+    }
+
+    /* 居中容器 */
+    .stage{
+      position:relative;
+      width:100vw;height:100vh;
+      display:grid;place-items:center;
+    }
+
+    /* 通用屏幕样式 */
+    .screen{
+      position:absolute;inset:0;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:24px;gap:18px;
+      transition:opacity 480ms ease, transform 480ms ease;
+      will-change:opacity,transform;
+      background-repeat:no-repeat;background-position:center;background-size:cover;
+    }
+
+    /* Intro 页面 -- 使用背景图或者渐变作为后备 */
+    .intro{
+      z-index:2;
+      background-image: var(--bg1-url), linear-gradient(rgba(2,6,23,0.42), rgba(3,10,30,0.42)), var(--bg1-fallback);
+      background-blend-mode: overlay, overlay, normal;
+    }
+
+    .intro .overlay-card{
+      width:min(980px,92%);
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius:18px;
+      padding:36px 32px;
+      text-align:center;
+      box-shadow:0 10px 30px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(6px);
+    }
+
+    .title{
+      font-size:clamp(20px,4vw,34px);
+      font-weight:700;
+      margin:0 0 12px 0;
+      letter-spacing:0.6px;
+      text-shadow:0 6px 22px rgba(2,6,23,0.6);
+    }
+
+    .subtitle{ color:var(--muted); font-size:clamp(13px,2.3vw,16px); margin-bottom:22px }
+
+    /* 设计感按钮 */
+    .btn{
+      display:inline-grid;place-items:center;
+      gap:8px;padding:12px 18px;border-radius:14px;
+      background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.06);
+      cursor:pointer;user-select:none;
+      transition:transform 160ms ease, box-shadow 160ms ease;
+      font-weight:700;color:var(--text-main);
+      box-shadow:0 6px 18px rgba(3,10,30,0.45);
+    }
+    .btn:active{ transform:translateY(2px) scale(0.997) }
+    .btn:hover{ transform:translateY(-3px); box-shadow:0 14px 36px rgba(0,0,0,0.45) }
+
+    .btn .icon{
+      width:38px;height:38px;display:inline-grid;place-items:center;border-radius:10px;background:linear-gradient(180deg,var(--accent), #007a66);color:#003633;font-weight:700;font-size:18px;margin-right:8px
+    }
+
+    .hint{font-size:13px;color:var(--muted);margin-top:10px}
+
+    /* Blessing 页面 */
+    .blessing{
+      z-index:1;opacity:0;pointer-events:none;transform:scale(0.98);
+      display:flex;align-items:center;justify-content:center;padding:32px;
+      background-image: var(--bg2-url), linear-gradient(rgba(2,6,23,0.42), rgba(3,10,30,0.42)), var(--bg2-fallback);
+      background-blend-mode: overlay, overlay, normal;
+    }
+
+    .blessing.visible{opacity:1;pointer-events:auto;transform:scale(1)}
+
+    .message-box{
+      width:min(980px,94%);padding:40px;border-radius:20px;text-align:center;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      box-shadow:0 12px 48px rgba(2,8,30,0.6);
+      backdrop-filter: blur(6px);
+    }
+
+    .message{
+      font-size:clamp(18px,4vw,36px);line-height:1.4;font-weight:700;color:var(--text-main);
+      margin:0 0 18px 0;padding:0 6px;
+      min-height:3.6em;display:flex;align-items:center;justify-content:center;transition:transform 300ms ease, opacity 300ms ease;
+    }
+
+    .sub{color:var(--muted);font-size:14px;margin-bottom:18px}
+
+    .actions{display:flex;gap:12px;justify-content:center}
+    .ghost-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:12px;cursor:pointer;color:var(--muted)}
+
+    /* 小加载指示（用于“再来一条”按钮） */
+    .ghost-btn .spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.12);border-top-color:var(--accent);box-sizing:border-box;margin-right:8px;opacity:0;transform:scale(0.8);transition:opacity 180ms ease, transform 180ms ease}
+    .ghost-btn.loading .spinner{opacity:1;transform:scale(1);animation:spin 900ms linear infinite}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    .ghost-btn .btn-text{display:inline-block;vertical-align:middle}
+
+    /* 动画（淡入放大） */
+    .anim-in{
+      animation:fadeScaleIn 540ms cubic-bezier(.2,.9,.3,1) both;
+    }
+    @keyframes fadeScaleIn{
+      from{opacity:0;transform:scale(0.88)}
+      to{opacity:1;transform:scale(1)}
+    }
+
+    /* 小屏适配 */
+    @media (max-width:520px){
+      .overlay-card{padding:22px}
+      .message{font-size:20px}
+    }
+
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <!-- 引导页（任意位置点击或按钮点击触发） -->
+    <section class="screen intro" id="intro" aria-label="引导页面">
+      <div class="overlay-card" id="introCard">
+        <h1 class="title">点击即可领取你的专属节日祝福</h1>
+        <p class="subtitle">今天是程序员节 — 感谢你把世界变得更可靠、更聪明。</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+          <div class="btn" id="openBtn" role="button" aria-label="点击开启祝福">
+            <span class="icon">{ }</span>
+            <span>点击开启祝福</span>
+          </div>
+        </div>
+        <p class="hint">或在此页面任意位置点击也可以。</p>
+      </div>
+    </section>
+
+    <!-- 祝福页 -->
+    <section class="screen blessing" id="blessing" aria-label="祝福页面">
+      <div class="message-box anim-in" id="messageBox">
+        <div class="message" id="message">祝你代码运行一次通过，Bug 永远被测试发现而不是上线发现！</div>
+        <div class="sub">点击任意处或“再来一条”获取另一条随机祝福。</div>
+        <div class="actions">
+          <button class="ghost-btn" id="again" aria-live="polite"><span class="spinner" aria-hidden="true"></span><span class="btn-text">再来一条</span></button>
+          <button class="ghost-btn" id="back">返回起始页</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // 预设祝福语库（可按需替换或扩展）
+    const messages = [
+      '愿你的程序永远没有内存泄漏，生活永远没有烦恼泄露。',
+      '愿今天的提交被一键通过，所有回滚都只是幻觉。',
+      '祝你加班少，输出多；测试覆盖高，Bug 低。',
+      '愿你的编译时间像你的耐心一样短暂，收获像你的灵感一样丰盛。',
+      '愿你每次运行都带着咖啡的香气与好心情，错误只在考试中出现。',
+      '愿你在写代码时心无旁骛，人生中重要的事统统自动化。',
+      '祝你遇到的都是好项目，好团队，还有更好的人生。',
+      '愿你的版本发布顺利，生活持续集成幸福。',
+      '愿你工作有热情，代码有优雅，未来有光亮。',
+      '愿你在调试中学会耐心，在生活中得到温柔。'
+    ];
+
+    const intro = document.getElementById('intro');
+    const openBtn = document.getElementById('openBtn');
+    const blessing = document.getElementById('blessing');
+    const messageEl = document.getElementById('message');
+    const messageBox = document.getElementById('messageBox');
+    const againBtn = document.getElementById('again');
+    const backBtn = document.getElementById('back');
+
+    // 状态：防抖锁、当前索引、是否已展示祝福（用于 confetti）
+    let clickLocked = false;
+    let currentIdx = -1;
+    let hasShown = false;
+
+    // 不重复的随机挑选
+    function pickRandomNoRepeat(){
+      if(messages.length === 0) return '';
+      if(messages.length === 1){ currentIdx = 0; return messages[0]; }
+      let idx;
+      let tries = 0;
+      do{
+        idx = Math.floor(Math.random()*messages.length);
+        tries++;
+        // 如果极端情况下多次尝试也没选到（非常罕见），就跳出
+        if(tries > 8) break;
+      }while(idx === currentIdx);
+      currentIdx = idx;
+      return messages[idx];
+    }
+
+    // 简单防抖包装器（返回带锁的函数）
+    function withLock(fn, delay = 420){
+      return function(...args){
+        if(clickLocked) return;
+        clickLocked = true;
+        try{ fn(...args); }catch(e){ console.error(e); }
+        setTimeout(()=> clickLocked = false, delay);
+      };
+    }
+
+    // 更细腻的祝福切换动画（缩放 + 淡入）
+    function showAnotherBlessingSmooth(){
+      messageEl.style.transition = 'transform 260ms ease, opacity 260ms ease';
+      messageEl.style.transform = 'scale(0.92)';
+      messageEl.style.opacity = '0';
+
+      setTimeout(()=>{
+        messageEl.textContent = pickRandomNoRepeat();
+        // 触发入场动画
+        void messageEl.offsetWidth;
+        messageEl.style.transform = 'scale(1)';
+        messageEl.style.opacity = '1';
+        // 清理 transition（保持干净）
+        setTimeout(()=>{ messageEl.style.transition = ''; }, 300);
+      }, 240);
+    }
+
+    // 轻量 confetti（只触发一次）
+    function simpleConfettiOnce(){
+      if(hasShown) return;
+      hasShown = true;
+
+      const c = document.createElement('canvas');
+      c.style.position = 'fixed'; c.style.left = 0; c.style.top = 0;
+      c.style.width = '100%'; c.style.height = '100%';
+      c.style.pointerEvents = 'none'; c.style.zIndex = 9999;
+      c.width = innerWidth; c.height = innerHeight;
+      document.body.appendChild(c);
+      const ctx = c.getContext('2d');
+
+      const pieces = [];
+      const colors = ['#FFD166','#06D6A0','#118AB2','#EF476F','#A8DADC'];
+      for(let i=0;i<80;i++){
+        pieces.push({
+          x: Math.random()*c.width,
+          y: Math.random()*c.height/2 - 50,
+          vx: (Math.random()-0.5)*6,
+          vy: 2 + Math.random()*5,
+          w: 6 + Math.random()*10,
+          h: 6 + Math.random()*6,
+          color: colors[Math.floor(Math.random()*colors.length)],
+          rot: Math.random()*Math.PI*2,
+          vr: (Math.random()-0.5)*0.25
+        });
+      }
+
+      let start = null;
+      function frame(ts){
+        if(!start) start = ts;
+        const elapsed = ts - start;
+        ctx.clearRect(0,0,c.width,c.height);
+        for(let p of pieces){
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.06; // gravity
+          p.rot += p.vr;
+          ctx.save();
+          ctx.translate(p.x,p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        }
+        if(elapsed < 2000){
+          requestAnimationFrame(frame);
+        } else {
+          // 继续保留一会儿然后移除
+          setTimeout(()=>{ try{ document.body.removeChild(c); }catch(e){} }, 400);
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    // 执行从 intro -> blessing 的过渡
+    function showBlessing(){
+      // 设置随机祝福（首次使用 non-repeat）
+      messageEl.textContent = pickRandomNoRepeat();
+
+      // 给祝福页加动画类并显示
+      blessing.classList.add('visible');
+
+      // 隐藏并禁用 intro 的交互（原因：intro 在 DOM 中 z-index 更高，虽然透明但会拦截点击）
+      intro.style.transition = 'opacity 480ms ease, transform 480ms ease';
+      intro.style.opacity = '0';
+      intro.style.transform = 'scale(0.98)';
+      intro.style.pointerEvents = 'none';
+
+      // 为了彻底从交互中移除 intro，我们在过渡结束后把 visibility 设为 hidden（可选）
+      const onEnd = (e) => {
+        if(e.propertyName === 'opacity'){
+          intro.style.visibility = 'hidden';
+          intro.removeEventListener('transitionend', onEnd);
+        }
+      };
+      intro.addEventListener('transitionend', onEnd);
+
+      // 触发一次 confetti（仅首次）
+      simpleConfettiOnce();
+
+      // 小焦点效果
+      messageBox.classList.remove('anim-in');
+      // 重新触发入场动画
+      void messageBox.offsetWidth;
+      messageBox.classList.add('anim-in');
+
+      // 无障碍支持：把焦点放到再来一条按钮
+      setTimeout(()=> againBtn.focus(), 520);
+    }
+
+    // 返回起始页
+    function backToIntro(){
+      // 让 intro 恢复可见并可交互
+      intro.style.visibility = 'visible';
+      intro.style.opacity = '1';
+      intro.style.transform = 'scale(1)';
+      intro.style.pointerEvents = 'auto';
+
+      // 隐藏祝福页
+      blessing.classList.remove('visible');
+
+      // 将焦点回到按钮
+      setTimeout(()=> openBtn.focus(), 300);
+
+      // 允许下一次重新触发 confetti（用户返回起始页后再次进入祝福页时会看到彩带）
+      hasShown = false;
+    }
+
+    // 包装好的锁版本函数，避免短时间重复触发
+    const showBlessingLocked = withLock(showBlessing, 700);
+    const showAnotherLocked = withLock(showAnotherBlessingSmooth, 420);
+
+    // 页面任意处点击（起始页）
+    intro.addEventListener('click', function(evt){
+      showBlessingLocked();
+    });
+
+    // 按钮也做同样的事（阻止双触发）
+    openBtn.addEventListener('click', function(evt){
+      evt.stopPropagation(); // 防止触发两次
+      showBlessingLocked();
+    });
+
+    // 再来一条（在祝福页内随机另一条）——带短暂加载指示
+    againBtn.addEventListener('click', function(evt){
+      evt.stopPropagation();
+      // 显示短暂的加载指示（200ms），同时触发防抖的祝福切换
+      againBtn.classList.add('loading');
+      setTimeout(()=> { againBtn.classList.remove('loading'); }, 200);
+      showAnotherLocked();
+    });
+
+    // 返回按钮
+    backBtn.addEventListener('click', function(evt){
+      evt.stopPropagation();
+      backToIntro();
+    });
+
+    // 在祝福页点击任意处也生成另一条祝福（不返回），使用 closest 检查确保点击按钮内部也不会误判
+    blessing.addEventListener('click', function(evt){
+      try{
+        if (evt.target.closest && (evt.target.closest('#again') || evt.target.closest('#back'))) {
+          return; // 点击的是按钮或按钮的子节点，忽略
+        }
+      }catch(e){ /* ignore */ }
+      showAnotherLocked();
+    });
+
+    // 键盘行为：按 Esc 返回、按 Enter/空格在起始页开启，在祝福页生成另一个祝福
+    document.addEventListener('keydown', function(evt){
+      if(evt.key === 'Escape'){
+        backToIntro();
+      }else if((evt.key === 'Enter' || evt.key === ' ') && document.activeElement && intro.contains(document.activeElement)){
+        showBlessingLocked();
+      }else if((evt.key === 'Enter' || evt.key === ' ') && blessing.classList.contains('visible')){
+        showAnotherLocked();
+      }
+    });
+
+    // 初始聚焦
+    openBtn.setAttribute('tabindex', '0');
+    openBtn.focus();
+
+    /* 可选：如果你想在页面运行时动态替换背景图（例如通过 query string），
+       下面是一个小示例：
+       访问时可以使用 ?bg1=<image-url>&bg2=<image-url> 来覆盖 CSS 变量。
+    */
+    (function(){
+      try{
+        const params = new URLSearchParams(location.search);
+        const bg1 = params.get('bg1');
+        const bg2 = params.get('bg2');
+        if(bg1) document.documentElement.style.setProperty('--bg1-url', `url('${bg1}')`);
+        if(bg2) document.documentElement.style.setProperty('--bg2-url', `url('${bg2}')`);
+      }catch(e){/* ignore */}
+    })();
+
+  </script>
+</body>
+</html>
