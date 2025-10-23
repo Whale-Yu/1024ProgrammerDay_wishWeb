@@ -516,27 +516,26 @@
         void messageBox.offsetWidth;
         messageBox.classList.add('anim-in');
 
-        // 设置15秒后自动返回首页
+        // 设置5秒后自动返回首页
         if (autoReturnTimer) {
             clearTimeout(autoReturnTimer);
         }
         autoReturnTimer = setTimeout(() => {
             backToIntro();
-        }, 15000);
+        }, 5000);
     }
 
     // 包装好的锁版本函数，避免短时间重复触发
     const showBlessingLocked = withLock(showBlessing, 700);
 
-    // 页面任意处点击（起始页）
-    intro.addEventListener('click', function (evt) {
+    // 按钮点击事件（起始页）
+    openBtn.addEventListener('click', function (evt) {
         showBlessingLocked();
     });
 
-    // 按钮也做同样的事（阻止双触发）
-    openBtn.addEventListener('click', function (evt) {
-        evt.stopPropagation(); // 防止触发两次
-        showBlessingLocked();
+    // 点击祝福页任意位置返回首页
+    blessing.addEventListener('click', function (evt) {
+        backToIntro();
     });
 
     // 初始聚焦
